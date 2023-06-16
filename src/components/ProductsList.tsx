@@ -9,7 +9,7 @@ const ProductsList = () => {
 
   return (
     <section>
-      <ul className="flex flex-wrap gap-4 items-center">
+      <ul className="flex flex-wrap gap-8 items-center justify-center my-12 mx-8">
         {products.length ? (
           products.map((product) => (
             <Product key={product.id} product={product} />
