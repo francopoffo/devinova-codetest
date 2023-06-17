@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { NextPage } from "next";
 import ProductsList from "~/components/ProductsList";
 
-type Props = {};
 
 const Spanish: NextPage = () => {
   const router = useRouter();

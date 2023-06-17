@@ -46,7 +46,7 @@ const ProductsList = ({ pathname }: Props) => {
       </h2>
       <ul className="mx-8 my-12 flex flex-wrap items-center justify-center gap-8">
         {products!.length ? (
-          products?.map((product) => (
+          products!.map((product) => (
             <Product key={product.id} product={product} pathname={pathname}/>
           ))
         ) : (
