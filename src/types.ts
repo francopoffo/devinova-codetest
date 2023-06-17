@@ -19,3 +19,10 @@ export const editProductInput = z.object({
   subtitle: z.string().nonempty("This field is required."),
   description: z.string().nonempty("This field is required."),
 });
+
+export const createTranslationProductInput = z.object({
+  name: z.string().nonempty("This field is required."),
+  subtitle: z.string().nonempty("This field is required."),
+  description: z.string().nonempty("This field is required."),
+  productId: z.number(),
+});

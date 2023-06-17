@@ -2,6 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { api } from "~/utils/api";
 import { ZodType, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
 
 type Inputs = {
   name: string;
@@ -11,12 +12,14 @@ type Inputs = {
 
 const NewProductForm = () => {
   const trpc = api.useContext();
+  let toastProductID: string;
 
-  const { mutate } = api.product.create.useMutation({
-    onSettled: async () => {
-      await trpc.product.getAll.invalidate();
-    },
-  });
+  const { mutate, isError, isLoading, isSuccess } =
+    api.product.create.useMutation({
+      onSettled: async () => {
+        await trpc.product.getAll.invalidate();
+      },
+    });
 
   const productInput: ZodType<Inputs> = z.object({
     name: z.string().nonempty("This field is required."),
@@ -35,7 +38,16 @@ const NewProductForm = () => {
 
   const onSubmit: SubmitHandler<Inputs> = (values: Inputs) => {
     mutate(values);
-    reset();
+    if (isLoading) {
+      toast.loading("Creating product...", { id: toastProductID });
+    }
+    if (isError) {
+      toast.error("Error creating your post.", { id: toastProductID });
+    }
+    if (isSuccess) {
+      toast.success("Producted created!", { id: toastProductID });
+      reset();
+    }
   };
 
   return (
@@ -46,9 +58,7 @@ const NewProductForm = () => {
       >
         <h2 className="self-center text-lg font-bold">Create a new product</h2>
         <div className="flex flex-col gap-2">
-          <label htmlFor="name">
-            Name
-          </label>
+          <label htmlFor="name">Name</label>
           <input
             type="text"
             {...register("name", {

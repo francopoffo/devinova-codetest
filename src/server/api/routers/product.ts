@@ -1,10 +1,44 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { productInput, editProductInput } from "~/types";
+import {
+  productInput,
+  editProductInput,
+  createTranslationProductInput,
+} from "~/types";
 
 export const productRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const products = await ctx.db.product.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return products.map(({ id, name, subtitle, description }) => ({
+      id,
+      name,
+      subtitle,
+      description,
+    }));
+  }),
+
+  getAllPT: publicProcedure.query(async ({ ctx }) => {
+    const products = await ctx.db.productPT.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return products.map(({ id, name, subtitle, description }) => ({
+      id,
+      name,
+      subtitle,
+      description,
+    }));
+  }),
+
+  getAllSP: publicProcedure.query(async ({ ctx }) => {
+    const products = await ctx.db.productSP.findMany({
       orderBy: {
         createdAt: "asc",
       },
@@ -23,6 +57,32 @@ export const productRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.product.create({
         data: {
+          name: input.name,
+          subtitle: input.subtitle,
+          description: input.description,
+        },
+      });
+    }),
+
+  createInPortuguese: publicProcedure
+    .input(createTranslationProductInput)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.productPT.create({
+        data: {
+          productId: input.productId,
+          name: input.name,
+          subtitle: input.subtitle,
+          description: input.description,
+        },
+      });
+    }),
+
+  createInSpanish: publicProcedure
+    .input(createTranslationProductInput)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.productSP.create({
+        data: {
+          productId: input.productId,
           name: input.name,
           subtitle: input.subtitle,
           description: input.description,

@@ -1,20 +1,19 @@
-import { type NextPage } from "next";
-import Layout from "~/components/Layout";
+import React from "react";
 import { useRouter } from "next/router";
-
-import NewProductForm from "~/components/NewProductForm";
+import { NextPage } from "next";
 import ProductsList from "~/components/ProductsList";
 
-const Home: NextPage = () => {
+type Props = {};
+
+const Spanish: NextPage = () => {
   const router = useRouter();
   const pathname = router.pathname;
 
   return (
     <>
-      <NewProductForm />
       <ProductsList pathname={pathname} />
     </>
   );
 };
 
-export default Home;
+export default Spanish;
