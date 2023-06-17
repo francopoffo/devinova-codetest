@@ -98,10 +98,56 @@ export const productRouter = createTRPCRouter({
     });
   }),
 
+  deletePT: publicProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
+    return ctx.db.productPT.delete({
+      where: {
+        id: input,
+      },
+    });
+  }),
+
+  deleteSP: publicProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
+    return ctx.db.productSP.delete({
+      where: {
+        id: input,
+      },
+    });
+  }),
+
   edit: publicProcedure
     .input(editProductInput)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.product.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          subtitle: input.subtitle,
+          description: input.description,
+        },
+      });
+    }),
+
+    editPT: publicProcedure
+    .input(editProductInput)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.productPT.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          subtitle: input.subtitle,
+          description: input.description,
+        },
+      });
+    }),
+
+    editSP: publicProcedure
+    .input(editProductInput)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.productSP.update({
         where: {
           id: input.id,
         },

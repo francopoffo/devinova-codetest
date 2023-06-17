@@ -8,9 +8,10 @@ import toast from "react-hot-toast";
 
 type ProductProps = {
   product: Product;
+  pathname: string;
 };
 
-const Product = ({ product }: ProductProps) => {
+const Product = ({ product, pathname }: ProductProps) => {
   const [toggleDelete, setToggleDelete] = useState(false);
   const [toggleEdit, setToggleEdit] = useState(false);
   const [toggleTranslation, setToggleTranslation] = useState(false);
@@ -24,23 +25,47 @@ const Product = ({ product }: ProductProps) => {
     },
   });
 
+  const { mutate: deleteMutationPT } = api.product.deletePT.useMutation({
+    onSettled: async () => {
+      await trpc.product.getAllPT.invalidate();
+    },
+  });
+
+  const { mutate: deleteMutationSP } = api.product.deleteSP.useMutation({
+    onSettled: async () => {
+      await trpc.product.getAllSP.invalidate();
+    },
+  });
+
   const { mutate: editMutation } = api.product.edit.useMutation({
     onSettled: async () => {
       await trpc.product.getAll.invalidate();
     },
   });
 
+  const { mutate: editMutationPT } = api.product.editPT.useMutation({
+    onSettled: async () => {
+      await trpc.product.getAllPT.invalidate();
+    },
+  });
+
+  const { mutate: editMutationSP } = api.product.editSP.useMutation({
+    onSettled: async () => {
+      await trpc.product.getAllSP.invalidate();
+    },
+  });
+
   const {
     mutate: createTranslationPT,
     isError: isErrorPT,
-    isLoading: isLoadingPT,
+
     isSuccess: isSuccessPT,
   } = api.product.createInPortuguese.useMutation({});
 
   const {
     mutate: createTranslationSP,
     isError: isErrorSP,
-    isLoading: isLoadingSP,
+
     isSuccess: isSuccessSP,
   } = api.product.createInSpanish.useMutation({});
 
@@ -60,6 +85,13 @@ const Product = ({ product }: ProductProps) => {
     deleteMutation(product.id);
   };
 
+  const deleteProductPT = () => {
+    deleteMutationPT(product.id);
+  };
+  const deleteProductSP = () => {
+    deleteMutationSP(product.id);
+  };
+
   const editProduct = (
     editedName: string,
     editedSubtitle: string,
@@ -72,6 +104,48 @@ const Product = ({ product }: ProductProps) => {
       description: editedDescription,
     });
   };
+
+  const editProductPT = (
+    editedName: string,
+    editedSubtitle: string,
+    editedDescription: string
+  ) => {
+    editMutationPT({
+      id: product.id,
+      name: editedName,
+      subtitle: editedSubtitle,
+      description: editedDescription,
+    });
+  };
+
+  const editProductSP = (
+    editedName: string,
+    editedSubtitle: string,
+    editedDescription: string
+  ) => {
+    editMutationSP({
+      id: product.id,
+      name: editedName,
+      subtitle: editedSubtitle,
+      description: editedDescription,
+    });
+  };
+
+  let edit: (
+    editedName: string,
+    editedSubtitle: string,
+    editedDescription: string
+  ) => void;
+
+  if (pathname === "/") {
+    edit = editProduct;
+  }
+  if (pathname === "/portuguese") {
+    edit = editProductPT;
+  }
+  if (pathname === "/spanish") {
+    edit = editProductSP;
+  }
 
   const translateToPortuguese = (
     translatedName: string,
@@ -99,9 +173,6 @@ const Product = ({ product }: ProductProps) => {
     });
   };
 
-  if (isLoadingSP) {
-    toast.loading("Creating the spanish translation", { id: toastProductID! });
-  }
   if (isErrorSP) {
     toast.remove(toastProductID!);
     toast.error(
@@ -117,9 +188,6 @@ const Product = ({ product }: ProductProps) => {
     );
   }
 
-  if (isLoadingPT) {
-    toast.loading("Creating the portuguese translation");
-  }
   if (isErrorPT) {
     toast.remove(toastProductID!);
     toast.error(
@@ -175,11 +243,22 @@ const Product = ({ product }: ProductProps) => {
         </div>
       </li>
       {toggleDelete && (
-        <ToggleDelete onDelete={deleteProduct} onToggle={onToggleDelete} />
+        <ToggleDelete
+          onDelete={() => {
+            if (pathname === "/") {
+              deleteProduct();
+            }
+            if (pathname === "/portuguese") {
+              deleteProductPT();
+            }
+            if (pathname === "/spanish") {
+              deleteProductSP();
+            }
+          }}
+          onToggle={onToggleDelete}
+        />
       )}
-      {toggleEdit && (
-        <ToggleEdit onEdit={editProduct} onToggle={onToggleEdit} />
-      )}
+      {toggleEdit && <ToggleEdit onEdit={edit!} onToggle={onToggleEdit} />}
       {toggleTranslation && (
         <ToggleTranslation
           onTranslatePT={translateToPortuguese}
