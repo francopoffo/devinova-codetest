@@ -10,7 +10,7 @@ const Layout = ({ children }: LayoutProps) => {
     <main className="flex flex-col items-center gap-4">
       <header className="mb-6">
         <Link href="/">
-          <h1 className="p-8 text-2xl font-bold">Devinova Code Test</h1>
+          <h1 className="p-8 text-2xl font-bold">Code Test</h1>
         </Link>
         <nav className="flex gap-3 text-lg font-bold items-center justify-between m-auto">
           <Link href="/">English</Link>
